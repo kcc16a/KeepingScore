@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">KeepingScore</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="saved_button_press_count_key">
+</string>
+    <string name="time_button">Timer</string>
+    <string name="press_button">Push</string>
+</resources>

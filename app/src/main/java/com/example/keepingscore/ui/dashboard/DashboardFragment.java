@@ -24,6 +24,8 @@ public class DashboardFragment extends Fragment {
 
     private TextView textView;
 
+    private TextView high_score;
+
     private Button button;
 
     private Button buttonCount;
@@ -34,11 +36,16 @@ public class DashboardFragment extends Fragment {
 
     private int newTimesPressed = 0;
 
+    private int timesPressed = 0;
+
+    private int highscore = 0;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         dashboardViewModel =
                 ViewModelProviders.of(this).get(DashboardViewModel.class);
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        high_score = root.findViewById(R.id.high_score);
         final TextView textView = root.findViewById(R.id.text_dashboard);
         dashboardViewModel.getText().observe(this, new Observer<String>() {
             @Override
@@ -59,10 +66,22 @@ public class DashboardFragment extends Fragment {
                 button.setEnabled(false);
                 buttonCount.setEnabled(true);
 
+                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                int defaultValue = getResources().getInteger(R.integer.saved_times_pressed_default_key);
+                timesPressed = sharedPref.getInt(getString(R.string.saved_button_press_count_key), defaultValue);
+
+                if (timesPressed < newTimesPressed) {
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putInt(getString(R.string.saved_button_press_count_key), newTimesPressed);
+                    editor.commit();
+
+                    timesPressed = newTimesPressed;
+
+                }
+
                 newTimesPressed = 0;
-                textView.setText("Button has been pressed " + Integer.toString(newTimesPressed)+ " times!");
 
-
+                high_score.setText("The high score is " + timesPressed + " clicks!");
 
             }
         };
@@ -72,28 +91,12 @@ public class DashboardFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-                int defaultValue = getResources().getInteger(R.integer.saved_times_pressed_default_key);
-                int timesPressed = sharedPref.getInt(getString(R.string.saved_button_press_count_key), defaultValue);
-
                 newTimesPressed = newTimesPressed + 1;
-
-                if (timesPressed < newTimesPressed) {
-                    SharedPreferences.Editor editor = sharedPref.edit();
-                    editor.putInt(getString(R.string.saved_button_press_count_key), newTimesPressed);
-                    editor.commit();
-
-                }
-
-
-
 
                 // be amazing, do something
                 textView.setText("Button has been pressed " + Integer.toString(newTimesPressed)+ " times!");
             }
         });
-
-
 
         buttonCount = root.findViewById(R.id.time_button);
         buttonCount.setOnClickListener(new View.OnClickListener() {
